@@ -1,0 +1,3 @@
+D:/Projekty/CLion/aids/fala/cmake-build-debug/CMakeFiles/fala.dir
+D:/Projekty/CLion/aids/fala/cmake-build-debug/CMakeFiles/edit_cache.dir
+D:/Projekty/CLion/aids/fala/cmake-build-debug/CMakeFiles/rebuild_cache.dir
