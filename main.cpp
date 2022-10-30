@@ -1,131 +1,165 @@
 #include <iostream>
 
-class DoublyLinkedCircularList
+class doubly_linked_circular_list
 {
  private:
   struct Node
   {
 	unsigned short data;
-	struct Node *next;
-	struct Node *prev;
+	Node *next;
+	Node *prev;
   };
 
-  struct Node *start;
+  Node *head, *tail;
 
- public:
-  DoublyLinkedCircularList()
+  struct Node *search(unsigned short value)
   {
-	start = new Node;
-	start->next = nullptr;
-	start->prev = nullptr;
+	Node *result = head;
+
+	while (result->next!=head)
+	{
+	  if (result->data==value)
+	  {
+		return result;
+	  }
+
+	  result = result->next;
+	}
+
+	if (result->data==value)
+	{
+	  return result;
+	}
+
+	return nullptr;
   }
 
-  virtual ~DoublyLinkedCircularList()
+ public:
+  doubly_linked_circular_list()
   {
-	Node *temp;
-	while (start !=nullptr)
+	head = nullptr;
+	tail = nullptr;
+  }
+
+  ~doubly_linked_circular_list()
+  {
+	if (head)
 	{
-	  temp = start;
-	  start = start->next;
-	  delete temp;
+	  Node *tmp = head;
+	  while (tmp->next!=head)
+	  {
+		Node *t = tmp;
+		tmp = tmp->next;
+		delete t;
+	  }
+	  delete tmp;
+	  head = nullptr;
 	}
   }
 
-  bool empty()
+  void append(unsigned short value)
   {
-	if(start->next == nullptr) return true;
+	Node *node = new Node;
+	node->data = value;
+
+	if (head==nullptr)
+	{
+	  node->next = node;
+	  node->prev = node;
+	  head = node;
+	  tail = node;
+	}
+
+	tail = head->prev;
+	tail->next = node;
+	node->prev = tail;
+	node->next = head;
+	head->prev = node;
+	tail = node;
+  }
+
+  void delete_node(unsigned short value)
+  {
+	Node *node = search(value);
+
+	if (node==nullptr)
+	{
+	  return;
+	}
+
+	tail = head->prev;
+
+	if(node == head && node == tail)
+	{
+	  head = tail = nullptr;
+	  delete node;
+	  return;
+	}
+
+	if (node==head)
+	{
+	  head = head->next;
+	  tail->next = head;
+	  head->prev = tail;
+	  delete node;
+	}
+	else if (node==tail)
+	{
+	  tail = tail->prev;
+	  tail->next = head;
+	  head->prev = tail;
+	  delete node;
+	}
+	else
+	{
+	  Node *prev_node = node->prev;
+	  Node *next_node = node->next;
+
+	  prev_node->next = next_node;
+	  next_node->prev = prev_node;
+
+	  delete node;
+	}
+  }
+
+  bool is_empty()
+  {
+	if(head==nullptr)
+	  return true;
 
 	return false;
   }
 
-  unsigned short front()
+  void print_list()
   {
-	return start->next->data;
-  }
-
-  unsigned short back()
-  {
-	return start->prev->data;
-  }
-
-  /*
-  void insertEnd(short value)
-  {
-	Node *last = (*start)->prev;
-
-	auto *new_node = new Node;
-	new_node->data = value;
-
-	new_node->next = *start;
-	(*start)->prev = new_node;
-
-	new_node->prev = last;
-	last->next = new_node;
-  }
-   */
-
-  void push_front(unsigned short value)
-  {
-	Node *last = start->prev;
-	Node *temp = new Node;
-	temp->data = value;
-
-	temp->next = start->next;
-	temp->prev = start->prev;
-
-	start->next = temp;
-	start->prev =
-  }
-
-  void insertBegin(short value)
-  {
-	struct Node *last = (*start)->prev;
-
-	auto *new_node = new Node;
-	new_node->data = value;
-
-	new_node->next = *start;
-	new_node->prev = last;
-
-	last->next = (*start)->prev = new_node;
-
-	*start = new_node;
-  }
-
-  void insertBetween(short insertedValue, short insertedAfterThisValue)
-  {
-	auto *new_node = new Node;
-	new_node->data = insertedValue;
-
-	struct Node *temp = *start;
-
-	while (temp->data!=insertedAfterThisValue)
+	if (!is_empty())
 	{
-	  temp = temp->next;
+	  Node *tmp = head;
+
+	  while (tmp->next!=head)
+	  {
+		printf("%d ", tmp->data);
+		tmp = tmp->next;
+	  }
+	  printf("%d", tmp->data);
 	}
-	struct Node *next = temp->next;
-
-	temp->next = new_node;
-	new_node->prev = temp;
-	new_node->next = next;
-	next->prev = new_node;
-  }
-
-  void printList()
-  {
-	struct Node *temp = *start;
-
-	while (temp->next!=*start)
+	else
 	{
-	  std::cout << temp->data << std::endl;
-	  temp = temp->next;
+	  printf("List is empty\n");
 	}
-	std::cout << temp->data << std::endl;
   }
+
 };
 
 int main()
 {
+  doubly_linked_circular_list list = doubly_linked_circular_list();
+  list.append(3);
+  list.append(4);
+  list.delete_node(3);
+  list.delete_node(4);
+  list.print_list();
+
 
   return 0;
 }
