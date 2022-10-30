@@ -80,10 +80,17 @@ class doubly_linked_circular_list
 
   void delete_node(unsigned short value)
   {
+	if (is_empty())
+	{
+	  printf("List is empty.\n");
+	  return;
+	}
+
 	Node *node = search(value);
 
 	if (node==nullptr)
 	{
+	  printf("Value not found.\n");
 	  return;
 	}
 
@@ -141,25 +148,19 @@ class doubly_linked_circular_list
 		printf("%d ", tmp->data);
 		tmp = tmp->next;
 	  }
-	  printf("%d", tmp->data);
+	  printf("%d\n", tmp->data);
 	}
 	else
 	{
 	  printf("List is empty\n");
 	}
   }
-
 };
 
 int main()
 {
   doubly_linked_circular_list list = doubly_linked_circular_list();
-  list.append(3);
-  list.append(4);
-  list.delete_node(3);
-  list.delete_node(4);
-  list.print_list();
-
+  list.delete_node(5);
 
   return 0;
 }
