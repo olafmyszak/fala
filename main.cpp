@@ -1,6 +1,6 @@
 #include <iostream>
 
-class doubly_linked_circular_list
+class Doubly_linked_circular_list
 {
  private:
   struct Node
@@ -35,13 +35,13 @@ class doubly_linked_circular_list
   }
 
  public:
-  doubly_linked_circular_list()
+  Doubly_linked_circular_list()
   {
 	head = nullptr;
 	tail = nullptr;
   }
 
-  ~doubly_linked_circular_list()
+  ~Doubly_linked_circular_list()
   {
 	if (head)
 	{
@@ -57,7 +57,7 @@ class doubly_linked_circular_list
 	}
   }
 
-  void append(unsigned short value)
+  void push_back(unsigned short value)
   {
 	Node *node = new Node;
 	node->data = value;
@@ -78,7 +78,18 @@ class doubly_linked_circular_list
 	tail = node;
   }
 
-  void delete_node(unsigned short value)
+  void push_front(unsigned short value)
+  {
+	Node *node = new Node;
+	node->data = value;
+
+	node->next = head;
+	node->prev = tail;
+	tail->next = node;
+	head = node;
+  }
+
+  void erase(unsigned short value)
   {
 	if (is_empty())
 	{
@@ -96,7 +107,7 @@ class doubly_linked_circular_list
 
 	tail = head->prev;
 
-	if(node == head && node == tail)
+	if (node==head && node==tail)
 	{
 	  head = tail = nullptr;
 	  delete node;
@@ -105,19 +116,11 @@ class doubly_linked_circular_list
 
 	if (node==head)
 	{
-	  head = head->next;
-	  tail->next = head;
-	  head->prev = tail;
-	  delete node;
-	}
-	else if (node==tail)
+	  pop_front();
+	} else if (node==tail)
 	{
-	  tail = tail->prev;
-	  tail->next = head;
-	  head->prev = tail;
-	  delete node;
-	}
-	else
+	  pop_back();
+	} else
 	{
 	  Node *prev_node = node->prev;
 	  Node *next_node = node->next;
@@ -129,9 +132,147 @@ class doubly_linked_circular_list
 	}
   }
 
+  void erase(Node *p)
+  {
+	if (is_empty())
+	{
+	  printf("List is empty.\n");
+	  return;
+	}
+
+	if (p==nullptr)
+	{
+	  printf("No such element.\n");
+	  return;
+	}
+
+	tail = head->prev;
+	Node *node = p->next;
+
+	if (node==head && node==tail)
+	{
+	  head = tail = nullptr;
+	  delete node;
+	} else if (node==head)
+	{
+	  pop_front();
+	} else if (node==tail)
+	{
+	  pop_back();
+	} else
+	{
+	  Node *prev_node = node->prev;
+	  Node *next_node = node->next;
+
+	  prev_node->next = next_node;
+	  next_node->prev = prev_node;
+
+	  delete node;
+	}
+  }
+
+  void pop_front()
+  {
+	Node *temp = head;
+
+	head = head->next;
+	head->prev = tail;
+	tail->next = head;
+
+	delete temp;
+  }
+
+  void pop_back()
+  {
+	Node *temp = tail;
+
+	tail = tail->prev;
+	tail->next = head;
+	head->prev = tail;
+
+	delete temp;
+  }
+
+  void insert(unsigned short position, unsigned short value)
+  {
+	if (is_empty())
+	{
+	  push_back(value);
+	}
+
+	Node *after = search(position);
+
+	if (after!=nullptr)
+	{
+	  Node *node = new Node;
+	  node->data = value;
+	  node->next = after->next;
+	  node->prev = after;
+	  after->next = node;
+	  return;
+	}
+
+	printf("Value not found.\n");
+  }
+
+  void insert(Node *p, unsigned short value)
+  {
+	if (is_empty())
+	{
+	  push_back(value);
+	}
+
+	if (p!=nullptr)
+	{
+	  Node *node = new Node;
+	  node->data = value;
+	  node->next = p->next;
+	  node->prev = p;
+	  p->next = node;
+	}
+  }
+
+  void insert(Node *p, Node *value)
+  {
+	if (p!=nullptr)
+	{
+	  Node *node = new Node;
+	  node->data = value->data;
+	  node->next = p->next;
+	  p->next = node;
+	  node->prev = p;
+	}
+  }
+
+  Node *first()
+  {
+	return head;
+  }
+
+  Node *last()
+  {
+	return tail;
+  }
+
+  Node *next(Node *p)
+  {
+	if (p==nullptr)
+	  return head;
+
+	return p->next;
+  }
+
+  Node *pos(unsigned short value)
+  {
+	Node *node = new Node;
+	node = search(value);
+
+	return node;
+  }
+
   bool is_empty()
   {
-	if(head==nullptr)
+	if (head==nullptr)
 	  return true;
 
 	return false;
@@ -149,8 +290,7 @@ class doubly_linked_circular_list
 		tmp = tmp->next;
 	  }
 	  printf("%d\n", tmp->data);
-	}
-	else
+	} else
 	{
 	  printf("List is empty\n");
 	}
@@ -159,8 +299,51 @@ class doubly_linked_circular_list
 
 int main()
 {
-  doubly_linked_circular_list list = doubly_linked_circular_list();
-  list.delete_node(5);
+  unsigned short num_of_pairs, starting_pair, num_of_ops, op, x;
+  bool direction, flag;
+
+  short temp;
+  scanf("%hd %hd %hd", &num_of_pairs, &starting_pair, &temp);
+  direction = temp; //0 zgodnie 1 przeciwnie
+
+  Doubly_linked_circular_list list = Doubly_linked_circular_list();
+
+  for (int i = 0; i < num_of_pairs; ++i)
+  {
+	list.push_back(i);
+  }
+
+  for (int i = 0; i < num_of_pairs - 1; ++i)
+  {
+	list.insert(i, list.pos(i)->prev->data);
+  }
+  list.insert(list.last(), list.last()->prev);
+
+  list.print_list();
+
+  scanf("%hd", &num_of_ops);
+
+  for (unsigned short i = 0; i < num_of_ops; ++i)
+  {
+	scanf("%hd", &op);
+
+	if (op==1)
+	{
+	  scanf("%hd %hd", &x, &temp);
+	  flag = temp;
+	} else
+	{
+	  scanf("%hd", &x);
+	}
+
+	switch (op)
+	{
+	  case 0:
+	  {
+
+	  }
+	}
+  }
 
   return 0;
 }
