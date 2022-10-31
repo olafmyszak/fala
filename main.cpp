@@ -31,6 +31,7 @@ class Doubly_linked_circular_list
 	  return result;
 	}
 
+	printf("Value not found.\n");
 	return nullptr;
   }
 
@@ -39,6 +40,7 @@ class Doubly_linked_circular_list
   {
 	head = nullptr;
 	tail = nullptr;
+
   }
 
   ~Doubly_linked_circular_list()
@@ -204,17 +206,21 @@ class Doubly_linked_circular_list
 
 	if (after!=nullptr)
 	{
+	  Node *before = after->next;
 	  Node *node = new Node;
 	  node->data = value;
-	  node->next = after->next;
-	  node->prev = after;
+
 	  after->next = node;
+	  node->next = before;
+	  node->prev = after;
+	  before->prev = node;
 	  return;
 	}
 
 	printf("Value not found.\n");
   }
 
+  /*
   void insert(Node *p, unsigned short value)
   {
 	if (is_empty())
@@ -231,6 +237,7 @@ class Doubly_linked_circular_list
 	  p->next = node;
 	}
   }
+  */
 
   void insert(Node *p, Node *value)
   {
@@ -264,8 +271,7 @@ class Doubly_linked_circular_list
 
   Node *pos(unsigned short value)
   {
-	Node *node = new Node;
-	node = search(value);
+	Node *node = search(value);
 
 	return node;
   }
@@ -295,15 +301,32 @@ class Doubly_linked_circular_list
 	  printf("List is empty\n");
 	}
   }
+
+  void change_head(unsigned short value)
+  {
+	Node *node = search(value);
+
+	if(node !=nullptr)
+	{
+	  head = node;
+	  head->next = node->next;
+	  head->prev = node->prev;
+
+	  tail = head->prev;
+	  tail->next = head;
+	  tail->prev = node->prev->prev;
+	}
+  }
 };
 
 int main()
 {
-  unsigned short num_of_pairs, starting_pair, num_of_ops, op, x;
+
+  unsigned short num_of_pairs, current_pair, num_of_ops, op, x;
   bool direction, flag;
 
   short temp;
-  scanf("%hd %hd %hd", &num_of_pairs, &starting_pair, &temp);
+  scanf("%hd %hd %hd", &num_of_pairs, &current_pair, &temp);
   direction = temp; //0 zgodnie 1 przeciwnie
 
   Doubly_linked_circular_list list = Doubly_linked_circular_list();
@@ -313,14 +336,29 @@ int main()
 	list.push_back(i);
   }
 
-  for (int i = 0; i < num_of_pairs - 1; ++i)
+  list.print_list();
+
+
+  list.insert(0, num_of_pairs-1);
+
+  for (int i = 1; i < num_of_pairs - 1; ++i)
   {
-	list.insert(i, list.pos(i)->prev->data);
+	list.insert(i, i-1);
   }
-  list.insert(list.last(), list.last()->prev);
+  list.push_back(list.last()->data-1);
 
   list.print_list();
 
+  list.change_head(3);
+
+  list.print_list();
+
+  list.pop_back();
+  list.pop_front();
+
+  list.print_list();
+
+  /*
   scanf("%hd", &num_of_ops);
 
   for (unsigned short i = 0; i < num_of_ops; ++i)
@@ -344,6 +382,7 @@ int main()
 	  }
 	}
   }
+   */
 
   return 0;
 }
