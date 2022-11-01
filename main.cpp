@@ -306,7 +306,7 @@ class Doubly_linked_circular_list
   {
 	Node *node = search(value);
 
-	if(node !=nullptr)
+	if (node!=nullptr)
 	{
 	  head = node;
 	  head->next = node->next;
@@ -317,6 +317,42 @@ class Doubly_linked_circular_list
 	  tail->prev = node->prev->prev;
 	}
   }
+
+  void change_head(Node *pos)
+  {
+	if (pos!=nullptr)
+	{
+	  head = pos;
+	  head->next = pos->next;
+	  head->prev = pos->prev;
+
+	  tail = head->prev;
+	  tail->next = head;
+	  tail->prev = pos->prev->prev;
+	}
+  }
+
+  void move(unsigned int n, bool direction)
+  {
+	Node *pos = head;
+
+	if (direction==0)
+	{
+	  for (int i = 0; i < n; ++i)
+	  {
+		pos = pos->next;
+	  }
+	}
+	else
+	{
+	  for (int i = 0; i < n; ++i)
+	  {
+		pos = pos->prev;
+	  }
+	}
+	change_head(pos);
+  }
+
 };
 
 int main()
@@ -336,29 +372,13 @@ int main()
 	list.push_back(i);
   }
 
-  list.print_list();
-
-
-  list.insert(0, num_of_pairs-1);
-
+  list.insert(0, num_of_pairs - 1);
   for (int i = 1; i < num_of_pairs - 1; ++i)
   {
-	list.insert(i, i-1);
+	list.insert(i, i - 1);
   }
-  list.push_back(list.last()->data-1);
+  list.push_back(list.last()->data - 1);
 
-  list.print_list();
-
-  list.change_head(3);
-
-  list.print_list();
-
-  list.pop_back();
-  list.pop_front();
-
-  list.print_list();
-
-  /*
   scanf("%hd", &num_of_ops);
 
   for (unsigned short i = 0; i < num_of_ops; ++i)
@@ -378,11 +398,23 @@ int main()
 	{
 	  case 0:
 	  {
+		list.move(x, direction);
+		list.print_list();
+	  }
 
+	  case 1:
+	  {
+		list.move(x, direction);
+		list.pop_front();
+	  }
+
+	  case 2:
+	  {
+		list.move(x, direction);
+		direction = !direction;
 	  }
 	}
   }
-   */
 
   return 0;
 }
