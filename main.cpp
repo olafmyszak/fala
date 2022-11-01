@@ -10,7 +10,7 @@ class Doubly_linked_circular_list
 	Node *prev;
   };
 
-  Node *head, *tail;
+  Node *head;
 
   struct Node *search(unsigned short value)
   {
@@ -39,8 +39,6 @@ class Doubly_linked_circular_list
   Doubly_linked_circular_list()
   {
 	head = nullptr;
-	tail = nullptr;
-
   }
 
   ~Doubly_linked_circular_list()
@@ -69,15 +67,13 @@ class Doubly_linked_circular_list
 	  node->next = node;
 	  node->prev = node;
 	  head = node;
-	  tail = node;
 	}
 
-	tail = head->prev;
+	Node *tail = head->prev;
 	tail->next = node;
 	node->prev = tail;
 	node->next = head;
 	head->prev = node;
-	tail = node;
   }
 
   void push_front(unsigned short value)
@@ -85,6 +81,7 @@ class Doubly_linked_circular_list
 	Node *node = new Node;
 	node->data = value;
 
+	Node *tail = head->prev;
 	node->next = head;
 	node->prev = tail;
 	tail->next = node;
@@ -107,7 +104,7 @@ class Doubly_linked_circular_list
 	  return;
 	}
 
-	tail = head->prev;
+	Node *tail = head->prev;
 
 	if (node==head && node==tail)
 	{
@@ -148,7 +145,7 @@ class Doubly_linked_circular_list
 	  return;
 	}
 
-	tail = head->prev;
+	Node *tail = head->prev;
 	Node *node = p->next;
 
 	if (node==head && node==tail)
@@ -176,6 +173,7 @@ class Doubly_linked_circular_list
   void pop_front()
   {
 	Node *temp = head;
+	Node *tail = head->prev;
 
 	head = head->next;
 	head->prev = tail;
@@ -186,6 +184,7 @@ class Doubly_linked_circular_list
 
   void pop_back()
   {
+	Node *tail = head->prev;
 	Node *temp = tail;
 
 	tail = tail->prev;
@@ -258,7 +257,7 @@ class Doubly_linked_circular_list
 
   Node *last()
   {
-	return tail;
+	return head->prev;
   }
 
   Node *next(Node *p)
@@ -284,18 +283,35 @@ class Doubly_linked_circular_list
 	return false;
   }
 
-  void print_list()
+  void print_list(bool direction)
   {
+
 	if (!is_empty())
 	{
-	  Node *tmp = head;
-
-	  while (tmp->next!=head)
+	  if(direction == false)
 	  {
-		printf("%d ", tmp->data);
-		tmp = tmp->next;
+		Node *tmp = head;
+
+		while (tmp->next!=head)
+		{
+		  printf("%d ", tmp->data);
+		  tmp = tmp->next;
+		}
+		printf("%d\n", tmp->data);
 	  }
-	  printf("%d\n", tmp->data);
+	  else
+	  {
+		Node *tmp = head->prev;
+
+		printf("%d ", head->data);
+		while (tmp->prev != head->prev)
+		{
+		  printf("%d ", tmp->data);
+		  tmp = tmp->prev;
+		}
+		printf("\n");
+	  }
+
 	} else
 	{
 	  printf("List is empty\n");
@@ -312,7 +328,7 @@ class Doubly_linked_circular_list
 	  head->next = node->next;
 	  head->prev = node->prev;
 
-	  tail = head->prev;
+	  Node *tail = head->prev;
 	  tail->next = head;
 	  tail->prev = node->prev->prev;
 	}
@@ -326,7 +342,7 @@ class Doubly_linked_circular_list
 	  head->next = pos->next;
 	  head->prev = pos->prev;
 
-	  tail = head->prev;
+	  Node *tail = head->prev;
 	  tail->next = head;
 	  tail->prev = pos->prev->prev;
 	}
@@ -379,6 +395,8 @@ int main()
   }
   list.push_back(list.last()->data - 1);
 
+  list.move(current_pair*2, false);
+
   scanf("%hd", &num_of_ops);
 
   for (unsigned short i = 0; i < num_of_ops; ++i)
@@ -398,21 +416,28 @@ int main()
 	{
 	  case 0:
 	  {
-		list.move(x, direction);
-		list.print_list();
+		list.move(x-1, direction);
+		list.print_list(direction);
+		break;
 	  }
 
 	  case 1:
 	  {
-		list.move(x, direction);
+		list.move(x-1, direction);
 		list.pop_front();
+		direction = !direction;
+		break;
 	  }
 
 	  case 2:
 	  {
-		list.move(x, direction);
+		list.move(x-1, direction);
 		direction = !direction;
+		break;
 	  }
+
+	  default: printf("Switch error.\n");
+		break;
 	}
   }
 
