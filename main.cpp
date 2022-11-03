@@ -11,6 +11,7 @@ class Doubly_linked_circular_list
   };
 
   Node *head;
+  unsigned int size;
 
   struct Node *search(unsigned short value)
   {
@@ -39,6 +40,7 @@ class Doubly_linked_circular_list
   Doubly_linked_circular_list()
   {
 	  head = nullptr;
+	  size = 0;
   }
 
   ~Doubly_linked_circular_list()
@@ -62,6 +64,8 @@ class Doubly_linked_circular_list
 	  Node *node = new Node;
 	  node->data = value;
 
+	  ++size;
+
 	  if (head==nullptr)
 	  {
 		  node->next = node;
@@ -80,6 +84,8 @@ class Doubly_linked_circular_list
   {
 	  Node *node = new Node;
 	  node->data = value;
+
+	  ++size;
 
 	  Node *tail = head->prev;
 	  node->next = head;
@@ -103,6 +109,8 @@ class Doubly_linked_circular_list
 		  printf("Value not found.\n");
 		  return;
 	  }
+
+	  --size;
 
 	  Node *tail = head->prev;
 
@@ -145,6 +153,8 @@ class Doubly_linked_circular_list
 		  return;
 	  }
 
+	  --size;
+
 	  Node *tail = head->prev;
 	  Node *node = p->next;
 
@@ -180,6 +190,8 @@ class Doubly_linked_circular_list
 	  head->prev = tail;
 	  tail->next = head;
 
+	  --size;
+
 	  delete temp;
 	  return value;
   }
@@ -193,6 +205,8 @@ class Doubly_linked_circular_list
 	  tail->next = head;
 	  head->prev = tail;
 
+	  --size;
+
 	  delete temp;
   }
 
@@ -201,6 +215,7 @@ class Doubly_linked_circular_list
 	  if (empty())
 	  {
 		  push_back(value);
+		  ++size;
 	  }
 
 	  Node *after = search(position);
@@ -215,6 +230,8 @@ class Doubly_linked_circular_list
 		  node->next = before;
 		  node->prev = after;
 		  before->prev = node;
+
+		  ++size;
 		  return;
 	  }
 
@@ -249,6 +266,7 @@ class Doubly_linked_circular_list
 		  node->next = p->next;
 		  p->next = node;
 		  node->prev = p;
+		  ++size;
 	  }
   }
 
@@ -369,24 +387,11 @@ class Doubly_linked_circular_list
 	  change_head(pos);
   }
 
-  int size()
+  unsigned int get_size() const
   {
-	  if (!empty())
-	  {
-		  Node *node = head->next;
-		  int count = 1;
-
-		  while (node!=head)
-		  {
-			  ++count;
-			  node = node->next;
-		  }
-
-		  return count;
-	  }
-
-	  return 0;
+	  return size;
   }
+
 
 };
 
@@ -403,6 +408,7 @@ int main()
 	Doubly_linked_circular_list list = Doubly_linked_circular_list();
 	Doubly_linked_circular_list eliminated = Doubly_linked_circular_list();
 
+
 	for (int i = 0; i < num_of_pairs; ++i)
 	{
 		list.push_back(i);
@@ -414,6 +420,10 @@ int main()
 		list.insert(i, i - 1);
 	}
 	list.push_back(list.last()->data - 1);
+
+	list.print_list(false);
+	list.pop_front();
+	list.pop_back();
 
 	list.move(current_pair*2, false);
 
@@ -445,7 +455,7 @@ int main()
 			{
 				if (flag==0)
 				{
-					if (list.size() > 3)
+					if (list.get_size() > 3)
 					{
 						list.move(x - 1, direction);
 						eliminated.push_back(list.pop_front());
