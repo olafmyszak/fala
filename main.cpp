@@ -90,7 +90,7 @@ class Doubly_linked_circular_list
 
   void erase(unsigned short value)
   {
-	if (is_empty())
+	if (empty())
 	{
 	  printf("List is empty.\n");
 	  return;
@@ -133,7 +133,7 @@ class Doubly_linked_circular_list
 
   void erase(Node *p)
   {
-	if (is_empty())
+	if (empty())
 	{
 	  printf("List is empty.\n");
 	  return;
@@ -170,16 +170,18 @@ class Doubly_linked_circular_list
 	}
   }
 
-  void pop_front()
+  int pop_front()
   {
 	Node *temp = head;
 	Node *tail = head->prev;
+	int value = temp->data;
 
 	head = head->next;
 	head->prev = tail;
 	tail->next = head;
 
 	delete temp;
+	return value;
   }
 
   void pop_back()
@@ -196,7 +198,7 @@ class Doubly_linked_circular_list
 
   void insert(unsigned short position, unsigned short value)
   {
-	if (is_empty())
+	if (empty())
 	{
 	  push_back(value);
 	}
@@ -222,7 +224,7 @@ class Doubly_linked_circular_list
   /*
   void insert(Node *p, unsigned short value)
   {
-	if (is_empty())
+	if (empty())
 	{
 	  push_back(value);
 	}
@@ -275,7 +277,7 @@ class Doubly_linked_circular_list
 	return node;
   }
 
-  bool is_empty()
+  bool empty()
   {
 	if (head==nullptr)
 	  return true;
@@ -286,9 +288,9 @@ class Doubly_linked_circular_list
   void print_list(bool direction)
   {
 
-	if (!is_empty())
+	if (!empty())
 	{
-	  if(direction == false)
+	  if (direction==false)
 	  {
 		Node *tmp = head;
 
@@ -298,13 +300,12 @@ class Doubly_linked_circular_list
 		  tmp = tmp->next;
 		}
 		printf("%d\n", tmp->data);
-	  }
-	  else
+	  } else
 	  {
 		Node *tmp = head->prev;
 
 		printf("%d ", head->data);
-		while (tmp->prev != head->prev)
+		while (tmp->prev!=head->prev)
 		{
 		  printf("%d ", tmp->data);
 		  tmp = tmp->prev;
@@ -358,8 +359,7 @@ class Doubly_linked_circular_list
 	  {
 		pos = pos->next;
 	  }
-	}
-	else
+	} else
 	{
 	  for (int i = 0; i < n; ++i)
 	  {
@@ -367,6 +367,25 @@ class Doubly_linked_circular_list
 	  }
 	}
 	change_head(pos);
+  }
+
+  int size()
+  {
+	if(!empty())
+	{
+	  Node *node = head->next;
+	  int count = 1;
+
+	  while (node!=head)
+	  {
+		++count;
+		node = node->next;
+	  }
+
+	  return count;
+	}
+
+	return 0;
   }
 
 };
@@ -382,6 +401,7 @@ int main()
   direction = temp; //0 zgodnie 1 przeciwnie
 
   Doubly_linked_circular_list list = Doubly_linked_circular_list();
+  Doubly_linked_circular_list eliminated = Doubly_linked_circular_list();
 
   for (int i = 0; i < num_of_pairs; ++i)
   {
@@ -416,22 +436,32 @@ int main()
 	{
 	  case 0:
 	  {
-		list.move(x-1, direction);
+		list.move(x - 1, direction);
 		list.print_list(direction);
 		break;
 	  }
 
 	  case 1:
 	  {
-		list.move(x-1, direction);
-		list.pop_front();
+		if (flag == 0)
+		{
+		  if (list.size() > 3)
+		  {
+			list.move(x - 1, direction);
+			eliminated.push_back(list.pop_front());
+
+		  } else
+		  {
+
+		  }
+		}
 		direction = !direction;
 		break;
 	  }
 
 	  case 2:
 	  {
-		list.move(x-1, direction);
+		list.move(x - 1, direction);
 		direction = !direction;
 		break;
 	  }
